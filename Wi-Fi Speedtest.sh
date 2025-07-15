@@ -54,7 +54,7 @@ run_speedtest() {
     local file_url=$1
     local label=$2
 
-    dialog --infobox "Running speed test with $label..." 3 40 > "$CURR_TTY"
+    dialog --infobox "Running speed test with $label file..." 3 40 > "$CURR_TTY"
     sleep 1
 
     START=$(date +%s%N)
@@ -62,14 +62,14 @@ run_speedtest() {
     END=$(date +%s%N)
 
     DURATION_NS=$((END - START))
-    DURATION_MS=$((DURATION_NS / 1000000))
+    DURATION_S=$(awk "BEGIN { printf \"%.1f\", $DURATION_NS / 1000000000 }")
     SIZE_MB=$(echo "$label" | tr -d 'MB')
-    SPEED_KBPS=$((SIZE_MB * 1024 * 1000 / DURATION_MS))
-    SPEED_MBPS=$(awk "BEGIN { printf \"%.2f\", $SPEED_KBPS / 1024 }")
+    SPEED_MBPS=$(awk "BEGIN { printf \"%.2f\", $SIZE_MB / $DURATION_S }")
 
-    dialog --msgbox "Download completed!\n\nFile: $label\nTime: ${DURATION_MS} ms\nSpeed: ${SPEED_MBPS} MB/s" 10 40 > "$CURR_TTY"
+    dialog --msgbox "Download completed!\n\nFile: $label\nTime: ${DURATION_S} s\nSpeed: ${SPEED_MBPS} MB/s" 10 40 > "$CURR_TTY"
     printf "\033c" > "$CURR_TTY"
 }
+
 
 # main menu
 MainMenu() {
